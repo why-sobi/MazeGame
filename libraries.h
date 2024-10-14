@@ -249,8 +249,8 @@ class Grid // Grid for the game
 
         while (bombs)
         {
-            r = rand() % 14;
-            c = rand() % 14;
+            r = rand() % size;
+            c = rand() % size;
             if (placedAt(r, c, 'B'))
                 bombs--;
         }
@@ -264,8 +264,8 @@ class Grid // Grid for the game
 
         while (coins)
         {
-            r = rand() % 14;
-            c = rand() % 14;
+            r = rand() % size;
+            c = rand() % size;
             if (placedAt(r, c, 'C'))
                 coins--;
         }
