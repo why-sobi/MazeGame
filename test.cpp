@@ -1,5 +1,6 @@
 #include "libraries.h"
 #include <ctime>
+#include <time.h>
 
 // int main() {
 //     srand(time(NULL));
@@ -8,25 +9,25 @@
 
 //     std::cout << "Welcome to the game!" << std::endl;
 //     std::cout << "Please select a grid size:" << std::endl;
-//     std::cout << "1. 15x15" << std::endl;
-//     std::cout << "2. 20x20" << std::endl;
-//     std::cout << "3. 25x25" << std::endl;
+//     std::cout << "1. 10x10" << std::endl;
+//     std::cout << "2. 15x15" << std::endl;
+//     std::cout << "3. 20x20" << std::endl;
 //     std::cout << "Enter your choice (1/2/3): ";
 //     std::cin >> input;
 
 //     switch (input) {
 //         case '1':
-//             size = 15;
+//             size = 10;
 //             break;
 //         case '2':
-//             size = 20;
+//             size = 15;
 //             break;
 //         case '3':
-//             size = 25;
+//             size = 20;
 //             break;
 //         default:
 //             std::cout << "Invalid choice. Defaulting to 15x15 grid." << std::endl;
-//             size = 15;
+//             size = 10;
 //     }
 
 //     Game game(size);
@@ -50,12 +51,21 @@ int main()
 {
     srand(time(NULL));
 
+    time_t startTime = time(NULL);
+    time_t currTime;
+    const double interval = 10.0;
+
     Game game(15);
     game.print();
     game.showGrid();
 
     while (game.getPlayerMoves())
     {
+        currTime = time(NULL);
+        if (difftime(currTime, startTime) >= interval) {
+            game.updateCoinsLocation();
+        }
+        
         char input;
         std::cin >> input;
         if (input == 'u' || input == 'U')

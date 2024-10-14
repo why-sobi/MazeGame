@@ -1,7 +1,7 @@
 #include <iostream>
 #include <random>
 
-char toUpper(char input)
+char toUpper(char input) // to convert lower to upper case
 {
     if ('A' <= input && input <= 'Z')
         return input;
@@ -9,14 +9,14 @@ char toUpper(char input)
         return input - 32;
 }
 
-struct Coordinates
+struct Coordinates // row and coloumn respectively
 {
     int r, c;
     Coordinates(int row = -1, int col = -1) : r(row), c(col) {}
 };
 
 template <typename T>
-struct OrderNode
+struct OrderNode // node used for the creation of stacks and queues
 {
     T data;
     OrderNode *next;
@@ -25,7 +25,7 @@ struct OrderNode
     OrderNode(const T &val) : next(nullptr), data(val) {}
 };
 
-template <typename T>
+template <typename T> // basic template for stacks
 class Stack
 {
     OrderNode<T> *top;
@@ -75,7 +75,7 @@ public:
     }
 };
 
-template <typename T>
+template <typename T> // basic template for queue
 class Queue
 {
     OrderNode<T> *start;
@@ -127,7 +127,7 @@ public:
     }
 };
 
-struct Node
+struct Node // node structure for the grid
 {
     char data;
     Node *up, *down, *left, *right;
@@ -135,13 +135,13 @@ struct Node
     Node() { up = down = left = right = nullptr; }
     Node(char val) : data(val) { up = down = left = right = nullptr; }
 };
-class Grid
+class Grid // Grid for the game
 {
     Node *head;
     int size;
     bool hideContent;
 
-    bool placedAt(int row, int col, char ch)
+    bool placedAt(int row, int col, char ch) // iterates to the given position and places ch if the position is empty
     {
         if (!head)
             return false;
@@ -158,7 +158,7 @@ class Grid
         }
         return false;
     }
-    bool emptyNode(int row, int col)
+    bool emptyNode(int row, int col) // tells if the data for the specified node is has default value
     {
         if (!head)
             return false;
@@ -170,14 +170,14 @@ class Grid
 
         return curr->data == '.';
     }
-    void setupGrid(int s)
+    void setupGrid(int s) // sets up the grid by connecting all the nodes
     {
-        Node *prevRowStart = nullptr;
+        Node *prevRowStart = nullptr; // reference to the first node of the last row's first node
 
         for (int i = 0; i < s; i++)
         {
-            Node *prev = nullptr;
-            Node *prevRowSetup = nullptr;
+            Node *prev = nullptr;         // reference to the previous node
+            Node *prevRowSetup = nullptr; // reference to node above the current node
             for (int j = 0; j < s; j++)
             {
                 if (!head)
@@ -198,7 +198,6 @@ class Grid
                     { // passed the first row
                         connect_vertically(prevRowStart, newNode);
                         prevRowStart = prevRowStart->right;
-                        // std::cout << prevRowStart->data << ' ';
                     }
                     if (j == 0)
                     { // first column
@@ -210,38 +209,38 @@ class Grid
             prevRowStart = prevRowSetup;
         }
     }
-    void setupPlayer()
+    void setupPlayer() // gives random node the value of the player
     {
         int r, c;
-        r = rand() % 14;
-        c = rand() % 14;
+        r = rand() % size;
+        c = rand() % size;
         placedAt(r, c, 'P');
     }
-    void setupKey()
+    void setupKey() // gives random coordinates to the key
     {
         int r, c;
         bool placed = false;
 
         while (!placed)
         {
-            r = rand() % 14;
-            c = rand() % 14;
-            placed = placedAt(r, c, 'K');
+            r = rand() % size;
+            c = rand() % size;
+            placed = placedAt(r, c, 'K'); // returns true if the key has been placed on a node with the default value
         }
     }
-    void setupDoor()
+    void setupDoor() // gives random coordinates to the door
     {
         int r, c;
         bool placed = false;
 
         while (!placed)
         {
-            r = rand() % 14;
-            c = rand() % 14;
+            r = rand() % size;
+            c = rand() % size;
             placed = placedAt(r, c, 'D');
         }
     }
-    void setupBombs()
+    void setupBombs() // gives random coordinates to random bombs until all have been placed at an empty node
     {
         int r, c;
         int bombs = (size == 15) ? 6 : (size == 20) ? 10
@@ -256,11 +255,11 @@ class Grid
                 bombs--;
         }
     }
-    void setupCoins()
+    void setupCoins() // gives random coordinates to random coins until all have been placed at an empty node
     {
         int r, c;
-        int coins = (size == 15) ? 6 : (size == 20) ? 10
-                                   : (size == 25)   ? 15
+        int coins = (size == 10) ? 6 : (size == 15) ? 10
+                                   : (size == 20)   ? 15
                                                     : 0;
 
         while (coins)
@@ -271,13 +270,26 @@ class Grid
                 coins--;
         }
     }
+    void removeCoins()
+    { // replaves all coins with default value (for the randomization of coins)
+        for (Node *start = head; start; start = start->down)
+        {
+            for (Node *curr = start; curr; curr = curr->right)
+            {
+                if (curr->data == 'C')
+                    curr->data = '.';
+            }
+        }
+    }
 
 public:
+    // constructors
     Grid() : hideContent(true) { head = nullptr; }
     Grid(int s) : size(s), hideContent(true)
     {
         head = nullptr;
     }
+    // Destructors
     ~Grid()
     {
         Node *nextRow = nullptr;
@@ -295,17 +307,17 @@ public:
     }
 
     // methods
-    void connect_horizontally(Node *&prev, Node *&follower)
+    void connect_horizontally(Node *&prev, Node *&follower) // two nodes to connect their left and right pointers
     {
         prev->right = follower;
         follower->left = prev;
     }
-    void connect_vertically(Node *&upper, Node *&lower)
+    void connect_vertically(Node *&upper, Node *&lower) // two nodes to connect their upper and lower pointers
     {
         upper->down = lower;
         lower->up = upper;
     }
-    void print() const
+    void print() const // simply prints the grid
     {
         for (int i = 0; i < size + 2; i++)
             std::cout << '#' << ' ';
@@ -327,9 +339,8 @@ public:
             std::cout << '#' << ' ';
         std::cout << '\n';
     }
-    void setupGame()
+    void setupGame() // setup the game board with the given size (bombs, player, door, coins and key
     {
-        // Setup the game board with the given size (bombs, player, door, coins and key)
         setupGrid(size);
         setupPlayer();
         setupKey();
@@ -337,13 +348,17 @@ public:
         setupBombs();
         setupCoins();
     }
-    void showContent()
+    void showContent() // to show all the contents of the board
     {
         hideContent = false;
         print();
         hideContent = true;
     }
-
+    void randomizeCoins()
+    { // removes and then sets up coins again
+        removeCoins();
+        setupCoins();
+    }
     // getters
     Node *getPlayer()
     {
@@ -357,7 +372,7 @@ public:
         }
         return nullptr;
     }
-    Coordinates getCoordinates(char ch)
+    Coordinates getCoordinates(char ch) // returns the row and column of the firs appearance of the specified data in the grid
     {
         int row = 0, col = 0;
 
@@ -377,29 +392,47 @@ public:
 
         return Coordinates();
     }
+    int getSize() const { return size; }
 };
 
 class Game
 {
-    Grid grid;
-    Node *player;
-    Stack<char> undo;
-    Queue<Coordinates> coinCollected;
-    int totalMoves;
-    bool hasKey;
-    bool atGate;
+    Grid grid;                        // grid
+    Node *player;                     // node reference to the player node
+    Stack<char> undo;                 // a stack that witholds the previous move for undo purposes
+    Queue<Coordinates> coinCollected; // a queue to preserve the order of the coordinates of the coins collected
+    int undoCount;                    // number of undos the player is allowed to do
+    int totalMoves;                   // total moves the player has to reach first to the key and then the door
+    int score;                        // player's score
+    bool hasKey;                      // if the player has accquired the key
+    bool atGate;                      // if the player has reached the gate
 
-    void setPlayerNode()
+    void setPlayerNode() // sets the reference to the player node
     {
         player = grid.getPlayer();
     }
-    int calSteps(const Coordinates &start, const Coordinates &stop)
+    int calSteps(const Coordinates &start, const Coordinates &stop) // calculates steps required to move from the starting coordinates to the ending ones
     {
         int steps = (abs(start.r - stop.r) + abs(start.c - stop.c));
         return steps;
     }
+    void setUndoCount()
+    { // simply sets the number of undos allowed based upon the level
+        switch (grid.getSize())
+        {
+        case 10:
+            this->undoCount = 6;
+            break;
+        case 15:
+            this->undoCount = 4;
+            break;
+        case 20:
+            this->undoCount = 1;
+            break;
+        }
+    }
 
-    int calTotalMoves()
+    int calTotalMoves() // calculates the total moves required for player to reach key and then to door
     {
         int steps = 0;
         Coordinates player = grid.getCoordinates('P');
@@ -407,9 +440,20 @@ class Game
         Coordinates door = grid.getCoordinates('D');
 
         steps = (calSteps(player, key) + calSteps(key, door)); // from player to key then to the door
+
+        switch (grid.getSize())
+        { // increases the allowed move if the difficulty is either easy or meduim
+        case 10:
+            steps += 6;
+            break;
+        case 15:
+            steps += 2;
+            break;
+        }
+
         return steps;
     }
-    bool dataController(char value)
+    bool dataController(char value) // handles logic for different data in the nodes encountered (returns true if encounters a coin)
     {
         switch (value)
         {
@@ -419,6 +463,8 @@ class Game
             break;
         case 'C':
             std::cout << "Collected a coin\n";
+            undoCount++;
+            score += 2;
             return true;
             break;
         case 'K':
@@ -428,6 +474,7 @@ class Game
             if (hasKey)
             {
                 std::cout << "Reached the door, you win!\n";
+                score += totalMoves;
                 totalMoves = 1;
             }
             else
@@ -435,6 +482,33 @@ class Game
                 std::cout << "You need a key to open the door!\n";
                 atGate = true;
             }
+        }
+        return false;
+    }
+    bool gotCloser() // returns true if the current move got him closer to his current goal
+    {
+        if (undo.isEmpty())
+            return false;
+        char lastMove = undo.peek();
+        Coordinates currPos = grid.getCoordinates('P');
+        Coordinates lastPos = currPos;
+
+        Coordinates goal = (hasKey) ? grid.getCoordinates('D') : grid.getCoordinates('K');
+
+        switch (lastMove)
+        {
+        case 'W':
+            lastPos.r--;
+            return (calSteps(lastPos, goal) < calSteps(lastPos, goal));
+        case 'S':
+            lastPos.r++;
+            return (calSteps(lastPos, goal) < calSteps(lastPos, goal));
+        case 'A':
+            lastPos.c++;
+            return (calSteps(lastPos, goal) < calSteps(lastPos, goal));
+        case 'D':
+            lastPos.c--;
+            return (calSteps(lastPos, goal) < calSteps(lastPos, goal));
         }
         return false;
     }
@@ -520,12 +594,23 @@ public:
         grid.setupGame();
         setPlayerNode();
         totalMoves = calTotalMoves();
+
+        setUndoCount();
+        score = 0;
+        hasKey = false;
+        grid.showContent();
     }
 
     void print() const { grid.print(); }
     void showGrid()
     {
         system("CLS"); // clear the terminal
+
+        std::cout << "Score: " << score << '\t' << "Hint: ";
+        gotCloser() ? std::cout << "Getting Closer!\n" : std::cout << "Getting Father Away!\n";
+        std::cout << "Moves left: " << totalMoves << '\n';
+
+        std::cout << "\n\n";
         grid.showContent();
     }
 
@@ -570,12 +655,11 @@ public:
             totalMoves--;
             showGrid();
         }
-        std::cout << "Moves left: " << totalMoves << '\n';
     }
 
     void undoMove()
     {
-        if (undo.isEmpty())
+        if (undo.isEmpty() || !undoCount)
         {
             showGrid();
             return;
@@ -597,10 +681,15 @@ public:
             break;
         }
         totalMoves++;
+        undoCount--;
         showGrid();
     }
     int getPlayerMoves()
     {
         return totalMoves;
+    }
+    void updateCoinsLocation()
+    {
+        grid.randomizeCoins();
     }
 };
