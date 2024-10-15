@@ -7,7 +7,9 @@
 char toUpper(char input) // to convert lower to upper case
 {
     if ('A' <= input && input <= 'Z')
+    {
         return input;
+    }    
     else
         return (input - 32);
 }
