@@ -42,7 +42,6 @@ This is a console-based maze game implemented in C++. The game features a grid-b
 > The game tracks and displays the coordinates of collected coins.
 
 **Code Structure**
-> test.cpp: Contains the main game loop and initialization.
-> libraries.h: Includes all necessary libraries and defines game logic, including:
+> main.cpp: Contains the main game loop, initialization and all the neccessary libraries and classes Including but not limited to: 
    . Grid class: Manages the game board.
    . Game class: Handles game mechanics and player interactions.
