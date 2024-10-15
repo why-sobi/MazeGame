@@ -12,8 +12,8 @@ This is a console-based maze game implemented in C++. The game features a grid-b
 > Score tracking
 
 **Requirements**
-> C++ compiler
-> PDCurses library for console manipulation
+> C++ compiler.\n
+> PDCurses library for console manipulation.
 
 **How to Play**
 > Run the game and select a grid size.
